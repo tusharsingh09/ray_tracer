@@ -6,6 +6,16 @@ use std::ops;
 #[derive(Debug, Clone, Copy)]
 pub struct Color(pub u8, pub u8, pub u8);
 
+impl Color {
+    pub fn new(x: f64, y: f64, z: f64) -> Self {
+        Color(
+            (x * 255.0) as u8,
+            (y * 255.0) as u8,
+            (z * 255.0) as u8
+        )
+    }
+}
+
 impl std::ops::Mul<f64> for Color {
     type Output = Color;
     fn mul(self, rhs: f64) -> Self {

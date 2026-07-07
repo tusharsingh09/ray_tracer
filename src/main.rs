@@ -9,30 +9,41 @@ use vector::*;
 use ray::*;
 
 fn ray_color(r: &Ray) -> Color {
-    let mut col: Color = Color(255, 255, 255);
+    let mut col: Color; // = Color(255, 255, 255);
     let unit_dir: Vector = unit_vector(r.dir());
     let a = (unit_dir.1 + 1.0) * 0.5;
-    col = Color(255, 255, 255) * (1.0 - a) + Color(0, 0, 0) * a;
+    col = Color::new(1.0, 1.0, 1.0) * (1.0 - a) + Color::new(0.5, 0.7, 1.0) * a;
 
-    if (hit_sphere(Vector(0.0, 0.0, -2.0), 0.5, &r)) {
+    /*
+    if hit_sphere(Vector(0.0, 0.0, -1.0), 0.5, &r) > 0.0 {
         col = Color(255, 0, 0);
     }
+    */
 
-    if hit_sphere(Vector(0.5, 0.5, -1.5), 0.8, &r) {
-        col = Color(0, 255, 255);
+    let t: f64 = hit_sphere(Vector(0.0, 0.0, -1.0), 0.5, &r);
+    // println!("{}", t);
+    if t > 0.0 {
+        // normal to sphere
+        // let n: Vector = unit_vector(&(r.at(t) - Vector(0.0, 0.0, -1.0)));
+        // col = Color::new(n.0 + 1.0, n.1 + 1.0, n.2 + 1.0) * 0.5;
+        let n: Vector = unit_vector(&(r.at(t) - Vector(0.0, 0.0, -1.0)));
+        col = Color::new(n.0 + 1.0, n.1 + 1.0, n.2 + 1.0) * 0.5;
     }
+
     col
 }
 
 // derived from equation of sphere
 // center radius and ray
-fn hit_sphere(c: Vector, r: f64, ray: &Ray) -> bool {
+fn hit_sphere(c: Vector, r: f64, ray: &Ray) -> f64 {
     let oc: Vector = c - *ray.origin();
     let a: f64 = dot(ray.dir(), ray.dir());
     let b: f64 = -2.0 * dot(ray.dir(), &oc);
     let c: f64 = dot(&oc, &oc) - r*r;
     let discriminant = b*b - 4.0*a*c;
-    discriminant >= 0.0
+
+    if discriminant < 0.0 { -1.0 }
+    else { (-b - discriminant.sqrt()) / (2.0 * a) }
 }
 
 fn main() {
@@ -59,6 +70,8 @@ fn main() {
     let viewport_top_left: Vector = camera_center - Vector(0.0, 0.0, focal_length) - viewport_u/2.0 - viewport_v/2.0;
     let pixel_00_coordinate: Vector = viewport_top_left + delta_u * 0.5 + delta_v * 0.5;
 
+    pixel_00_coordinate.print();
+
     let mut writer: BufWriter<File> = init_ppm(width, height).expect("Failed");
 
     for j in 0..height {
@@ -66,6 +79,7 @@ fn main() {
             let pixel_center = pixel_00_coordinate + (delta_u * i as f64) + (delta_v * j as f64);
             let ray_direction = pixel_center - camera_center;
             let ray = Ray::new(ray_direction, camera_center); 
+            // println!("{} {} {}", ray.dir().0, ray.dir().1, ray.dir().2);
 
             push_pixel(ray_color(&ray), &mut writer).expect("Failed");
         }

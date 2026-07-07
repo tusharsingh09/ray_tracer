@@ -1,5 +1,4 @@
-    use std::ops;
-
+use std::ops;
 #[derive(Debug, Copy, Clone)]
 pub struct Point(f64, f64, f64);
 
@@ -29,6 +28,10 @@ impl Vector {
     pub fn direction(&self) -> Self{
         *self / self.length()
     }
+
+    pub fn print(&self) -> () {
+        println!("{} {} {}", self.0, self.1, self.2);
+    }
 }
 
 impl ops::Add<Self> for Vector {
@@ -41,7 +44,7 @@ impl ops::Add<Self> for Vector {
 impl ops::Sub<Self> for Vector {
     type Output = Self;
     fn sub(self, _rhs: Vector) -> Self {
-        Vector(self.0 - _rhs.0, self.1 - _rhs.1, self.2 - _rhs.1)
+        Vector(self.0 - _rhs.0, self.1 - _rhs.1, self.2 - _rhs.2)
     }
 }
 
