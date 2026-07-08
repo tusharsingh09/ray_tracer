@@ -1,25 +1,19 @@
 use std::fs::File;
 use std::io::{BufWriter, Write};
 
-use std::ops;
-
 #[derive(Debug, Clone, Copy)]
-pub struct Color(pub u8, pub u8, pub u8);
+pub struct Color(pub f64, pub f64, pub f64);
 
 impl Color {
     pub fn new(x: f64, y: f64, z: f64) -> Self {
-        Color(
-            (x * 255.0) as u8,
-            (y * 255.0) as u8,
-            (z * 255.0) as u8
-        )
+        Color(x, y, z)
     }
 }
 
 impl std::ops::Mul<f64> for Color {
     type Output = Color;
     fn mul(self, rhs: f64) -> Self {
-        Color((self.0 as f64 * rhs) as u8, (self.1 as f64 * rhs) as u8, (self.2 as  f64 * rhs) as u8)
+        Color((self.0 * rhs), (self.1 * rhs), (self.2 * rhs))
     }
 }
 
@@ -49,6 +43,6 @@ pub fn init_ppm(width: u16, height: u16) -> std::io::Result<BufWriter<File>>{
 }
 
 pub fn push_pixel(col: Color, writer: &mut BufWriter<File>) -> std::io::Result<()> {
-    writeln!(writer, "{} {} {}", col.0, col.1, col.2)?;
+    writeln!(writer, "{} {} {}", (255.99 * col.0) as u8, (255.99 * col.1) as u8, (255.99 * col.2) as u8)?;
     Ok(())
 }

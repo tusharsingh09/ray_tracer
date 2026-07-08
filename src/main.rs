@@ -9,27 +9,21 @@ use vector::*;
 use ray::*;
 
 fn ray_color(r: &Ray) -> Color {
-    let mut col: Color; // = Color(255, 255, 255);
+    let col: Color; // = Color(255, 255, 255);
     let unit_dir: Vector = unit_vector(r.dir());
     let a = (unit_dir.1 + 1.0) * 0.5;
-    col = Color::new(1.0, 1.0, 1.0) * (1.0 - a) + Color::new(0.5, 0.7, 1.0) * a;
-
-    /*
-    if hit_sphere(Vector(0.0, 0.0, -1.0), 0.5, &r) > 0.0 {
-        col = Color(255, 0, 0);
-    }
-    */
 
     let t: f64 = hit_sphere(Vector(0.0, 0.0, -1.0), 0.5, &r);
+    print!("{} ", t);
     // println!("{}", t);
     if t > 0.0 {
         // normal to sphere
-        // let n: Vector = unit_vector(&(r.at(t) - Vector(0.0, 0.0, -1.0)));
-        // col = Color::new(n.0 + 1.0, n.1 + 1.0, n.2 + 1.0) * 0.5;
         let n: Vector = unit_vector(&(r.at(t) - Vector(0.0, 0.0, -1.0)));
-        col = Color::new(n.0 + 1.0, n.1 + 1.0, n.2 + 1.0) * 0.5;
+        col = Color::new((n.0 + 1.0), (n.1+ 1.0), (n.2 + 1.0)) * 0.5;
+        return col;
     }
 
+    col = Color::new(1.0, 1.0, 1.0) * (1.0 - a) + Color::new(0.4 * a, 0.6 * a, 1.0 * a);
     col
 }
 
@@ -49,8 +43,8 @@ fn hit_sphere(c: Vector, r: f64, ray: &Ray) -> f64 {
 fn main() {
     // use p3, each line will have one pixel
     // going from top left to bottom right
-    const ASPECT_RATIO: f64 = 16./9.;
-    let height: u16 = 400;
+    const ASPECT_RATIO: f64 = 16.0/9.0;
+    let height: u16 = 128;
     let width: u16 = (height as f64 * ASPECT_RATIO) as u16;
 
     // camera settings
