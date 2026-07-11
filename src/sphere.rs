@@ -1,4 +1,4 @@
-use crate::{hittable::{self, Hittable}, vector::Vector};
+use crate::{hittable::{self, Hittable}, interval::Interval, vector::Vector};
 use crate::vector::*;
 
 pub struct Sphere {
@@ -22,7 +22,7 @@ impl Sphere {
 }
 
 impl Hittable for Sphere {
-    fn hit(&self, ray: &crate::ray::Ray, ray_tmin: f64, ray_tmax: f64, object: &mut hittable::HitRecord) -> bool {
+    fn hit(&self, ray: &crate::ray::Ray, interval: &Interval, object: &mut hittable::HitRecord) -> bool {
         let oc = self.c - *ray.origin(); 
         let a = ray.dir().length_squared();
         let h = dot(ray.dir(), &oc);
@@ -34,9 +34,9 @@ impl Hittable for Sphere {
         let sqrt_d = discriminant.sqrt();
         let mut root = (h - sqrt_d) / a;
 
-        if root <= ray_tmin || root >= ray_tmax {
+        if !interval.surrounds(&root) {
             root = (h + sqrt_d) / a;
-            if root <= ray_tmin || root >= ray_tmax { return false; }
+            if !interval.surrounds(&root) { return false; }
         }
 
         object.t = root;

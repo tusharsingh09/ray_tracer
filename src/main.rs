@@ -5,6 +5,7 @@ mod hittable;
 mod sphere;
 mod hittable_list;
 mod util;
+mod interval;
 
 use std::{fs::File, io::BufWriter};
 
@@ -13,6 +14,7 @@ use vector::*;
 use ray::*;
 use sphere::*;
 use util::*;
+use interval::*;
 
 use crate::{hittable::{HitRecord, Hittable}, hittable_list::Hittable_List};
 
@@ -36,7 +38,7 @@ fn ray_color(r: &Ray, world: &Hittable_List) -> Color {
     */
 
     let mut rec: HitRecord = HitRecord::new();
-    if world.hit(r, 0.0, INF, &mut rec) {
+    if world.hit(r, &Interval::new(0.0, INF), &mut rec) {
         let v = (rec.normal + Vector(1.0, 1.0, 1.0)) * 0.5;
         return Color(v.0, v.1, v.2);
     }
@@ -88,6 +90,8 @@ fn main() {
 
     world.add(Box::new(Sphere::new(Vector(0.0, 0.0, -1.0), 0.5)));
     world.add(Box::new(Sphere::new(Vector(0.0, -100.5, -1.0), 100.0)));
+    world.add(Box::new(Sphere::new(Vector(1.0, 0.0, -1.0), 0.5)));
+    world.add(Box::new(Sphere::new(Vector(-1.0, 0.0, -1.0), 0.5)));
 
     let mut writer: BufWriter<File> = init_ppm(width, height).expect("Failed");
 
