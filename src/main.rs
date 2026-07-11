@@ -1,29 +1,46 @@
 mod ppm;
 mod vector;
 mod ray;
+mod hittable;
+mod sphere;
+mod hittable_list;
+mod util;
 
 use std::{fs::File, io::BufWriter};
 
 use ppm::*;
 use vector::*;
 use ray::*;
+use sphere::*;
+use util::*;
 
-fn ray_color(r: &Ray) -> Color {
+use crate::{hittable::{HitRecord, Hittable}, hittable_list::Hittable_List};
+
+fn ray_color(r: &Ray, world: &Hittable_List) -> Color {
     let col: Color; // = Color(255, 255, 255);
     let unit_dir: Vector = unit_vector(r.dir());
     let a = (unit_dir.1 + 1.0) * 0.5;
+    col = Color::new(1.0, 1.0, 1.0) * (1.0 - a) + Color::new(0.4, 0.6, 1.0) * a;
 
+    /*
     let t: f64 = hit_sphere(Vector(0.0, 0.0, -1.0), 0.5, &r);
-    print!("{} ", t);
-    // println!("{}", t);
+    print!("{} ", r.at(t).2);
+
     if t > 0.0 {
         // normal to sphere
         let n: Vector = unit_vector(&(r.at(t) - Vector(0.0, 0.0, -1.0)));
-        col = Color::new((n.0 + 1.0), (n.1+ 1.0), (n.2 + 1.0)) * 0.5;
+        col = Color::new(n.0 + 1.0, n.1+ 1.0, n.2 + 1.0) * 0.5;
         return col;
     }
 
-    col = Color::new(1.0, 1.0, 1.0) * (1.0 - a) + Color::new(0.4 * a, 0.6 * a, 1.0 * a);
+    */
+
+    let mut rec: HitRecord = HitRecord::new();
+    if world.hit(r, 0.0, INF, &mut rec) {
+        let v = (rec.normal + Vector(1.0, 1.0, 1.0)) * 0.5;
+        return Color(v.0, v.1, v.2);
+    }
+
     col
 }
 
@@ -66,6 +83,12 @@ fn main() {
 
     pixel_00_coordinate.print();
 
+    // world
+    let mut world: Hittable_List = Hittable_List::new();
+
+    world.add(Box::new(Sphere::new(Vector(0.0, 0.0, -1.0), 0.5)));
+    world.add(Box::new(Sphere::new(Vector(0.0, -100.5, -1.0), 100.0)));
+
     let mut writer: BufWriter<File> = init_ppm(width, height).expect("Failed");
 
     for j in 0..height {
@@ -75,7 +98,7 @@ fn main() {
             let ray = Ray::new(ray_direction, camera_center); 
             // println!("{} {} {}", ray.dir().0, ray.dir().1, ray.dir().2);
 
-            push_pixel(ray_color(&ray), &mut writer).expect("Failed");
+            push_pixel(ray_color(&ray, &world), &mut writer).expect("Failed");
         }
     }
 }
