@@ -6,6 +6,7 @@ mod sphere;
 mod hittable_list;
 mod util;
 mod interval;
+mod camera;
 
 use std::{fs::File, io::BufWriter};
 
@@ -15,6 +16,7 @@ use ray::*;
 use sphere::*;
 use util::*;
 use interval::*;
+use camera::*;
 
 use crate::{hittable::{HitRecord, Hittable}, hittable_list::Hittable_List};
 
@@ -93,6 +95,7 @@ fn main() {
     world.add(Box::new(Sphere::new(Vector(1.0, 0.0, -1.0), 0.5)));
     world.add(Box::new(Sphere::new(Vector(-1.0, 0.0, -1.0), 0.5)));
 
+    /*
     let mut writer: BufWriter<File> = init_ppm(width, height).expect("Failed");
 
     for j in 0..height {
@@ -105,4 +108,11 @@ fn main() {
             push_pixel(ray_color(&ray, &world), &mut writer).expect("Failed");
         }
     }
+    */
+
+    let mut cam = Camera::default();
+    cam.set_aspect_ratio(16. / 9.0);
+    cam.set_width(400);
+
+    cam.render(&world);
 }

@@ -13,7 +13,7 @@ impl ops::Add<Vector> for Point {
     }
 }
 
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, Default)]
 pub struct Vector(pub f64, pub f64, pub f64);
 
 impl Vector {
