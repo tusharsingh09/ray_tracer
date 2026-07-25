@@ -114,6 +114,7 @@ fn main() {
     cam.set_aspect_ratio(16. / 9.0);
     cam.set_width(400);
     cam.set_samples_per_pixel(100);
+    cam.set_max_depth(5);
 
     cam.render(&world);
 }

@@ -18,7 +18,10 @@ pub struct Camera {
     
     // anti aliasing
     samples: u8,
-    pixel_samp_scale: f64
+    pixel_samp_scale: f64,
+
+    // tracing
+    max_depth: u8
 }
 
 impl Camera {
@@ -37,7 +40,7 @@ impl Camera {
                 let mut pixel_color: Color = Color(0.0, 0.0, 0.0);
                 for sample in 0..self.samples {
                     let r = self.get_ray(i, j);
-                    pixel_color = pixel_color + self.ray_color(&r, world);
+                    pixel_color = pixel_color + self.ray_color(&r, world, self.max_depth);
                 }
                 push_pixel(pixel_color * self.pixel_samp_scale, &mut writer).expect("deadbeef");
             }
@@ -57,6 +60,10 @@ impl Camera {
 
     pub fn set_samples_per_pixel(&mut self, n: u8) {
         self.samples = n;
+    }
+
+    pub fn set_max_depth(&mut self, depth: u8) {
+        self.max_depth = depth;
     }
 
     fn initialize(&mut self) {
@@ -82,12 +89,16 @@ impl Camera {
         self.pixel00_loc = viewport_top_left + (self.delta_u + self.delta_v) * 0.5;
     }
 
-    fn ray_color(&self, r: &Ray, world: &Hittable_List) -> Color{
+    fn ray_color(&self, r: &Ray, world: &Hittable_List, depth: u8) -> Color{
         let mut rec: HitRecord = HitRecord::new();
 
+        if depth <= 0 { return Color(0.0, 0.0, 0.0); }
+
         if(world.hit(r, &Interval::new(0.0, f64::INFINITY), &mut rec)) {
-            let v = rec.normal + Vector(1.0, 1.0, 1.0);
-            return Color(v.0, v.1, v.2) * 0.5;
+            // let v = rec.normal + Vector(1.0, 1.0, 1.0);
+            let dir = Vector::rand_on_hemi(&rec.normal);
+            return self.ray_color(&Ray::new(dir, rec.p), world, self.max_depth - 1) * 0.5;
+            // return Color(v.0, v.1, v.2) * 0.5;
         }
         
         let unit_dir = unit_vector(r.dir());

@@ -1,3 +1,4 @@
+use crate::util::*;
 use std::ops;
 #[derive(Debug, Copy, Clone)]
 pub struct Point(f64, f64, f64);
@@ -31,6 +32,28 @@ impl Vector {
 
     pub fn print(&self) -> () {
         println!("{} {} {}", self.0, self.1, self.2);
+    }
+
+    pub fn random() -> Vector {
+        Vector(rand(), rand(), rand())
+    }
+     
+    pub fn rand_range(min: f64, max: f64) -> Vector {
+        Vector(rand_range(min, max), rand_range(min, max), rand_range(min, max))
+    }
+
+    pub fn random_unit() -> Vector {
+        loop {
+            let p = Vector::rand_range(-1.0, 1.0);
+            let len = p.length_squared();
+            if len <= 1.0 && len >= 1e-160 { return p / len.sqrt(); }
+        }
+    }
+
+    pub fn rand_on_hemi(n: &Vector) -> Vector {
+        let unit_v = Self::random_unit();
+        if dot(&unit_v, &n) > 0.0 { return unit_v; }
+        else { return unit_v * -1.0 };
     }
 }
 
