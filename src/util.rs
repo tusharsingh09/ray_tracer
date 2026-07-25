@@ -4,3 +4,11 @@ pub const INF: f64 = f64::INFINITY;
 pub fn deg_to_rad(deg: f64) -> f64 {
     deg * PI / 180.0
 }
+
+pub fn rand() -> f64 {
+    rand::random()
+}
+
+pub fn rand_range(min: f64, max: f64) -> f64 {
+    min + rand() * (max - min)
+}

@@ -1,6 +1,8 @@
 use std::fs::File;
 use std::io::{BufWriter, Write};
 
+use crate::interval::*;
+
 #[derive(Debug, Clone, Copy)]
 pub struct Color(pub f64, pub f64, pub f64);
 
@@ -43,6 +45,12 @@ pub fn init_ppm(width: u16, height: u16) -> std::io::Result<BufWriter<File>>{
 }
 
 pub fn push_pixel(col: Color, writer: &mut BufWriter<File>) -> std::io::Result<()> {
-    writeln!(writer, "{} {} {}", (255.99 * col.0) as u8, (255.99 * col.1) as u8, (255.99 * col.2) as u8)?;
+    let intensity: Interval = Interval::new(0.0, 0.999);
+
+    let r = (256.0 * intensity.clamp(col.0)) as u8;
+    let g = (256.0 * intensity.clamp(col.1)) as u8;
+    let b = (256.0 * intensity.clamp(col.2)) as u8;
+
+    writeln!(writer, "{} {} {}", r, g, b)?;
     Ok(())
 }
