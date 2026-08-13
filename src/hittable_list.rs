@@ -1,5 +1,3 @@
-use std::vec;
-
 use crate::hittable::*;
 use crate::ray::*;
 use crate::interval::*;

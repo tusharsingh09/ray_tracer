@@ -1,13 +1,16 @@
 use crate::vector::*;
 use crate::ray::*;
 use crate::interval::*;
+use crate::ppm::*;
+use crate::material::*;
 
-#[derive(Clone, Copy)]
+#[derive(Copy, Clone, Default)]
 pub struct HitRecord {
     pub p: Vector,
     pub normal: Vector,
     pub t: f64,
-    front_face: bool
+    front_face: bool,
+    pub col: Color
 }
 
 impl HitRecord {
@@ -15,7 +18,8 @@ impl HitRecord {
         HitRecord {
             p: Vector(0.0, 0.0, 0.0),
             normal: Vector(0.0, 0.0, 0.0),
-            t: 0.0, front_face: false
+            t: 0.0, front_face: false,
+            col: Color(0.0, 0.0, 0.0)
         }
     }
 

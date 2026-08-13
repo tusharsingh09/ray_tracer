@@ -50,9 +50,10 @@ impl Camera {
     pub fn set_aspect_ratio(&mut self, r: f64) {
         self.aspect_ratio = r;
     }
-     pub fn set_width(&mut self, width: u16) {
+    
+    pub fn set_width(&mut self, width: u16) {
         self.width = width;
-     }
+    }
 
     pub fn get_aspect_ratio(&self) -> f64 {
         self.aspect_ratio
@@ -74,7 +75,6 @@ impl Camera {
         self.pixel_samp_scale = 1.0 / (self.samples as f64);
 
         // camera and viewport
-
         let focal_len = 1.0;
         let viewport_height = 2.0;
         let viewport_width = viewport_height * (self.width as f64) / (self.height as f64);
@@ -92,15 +92,16 @@ impl Camera {
     fn ray_color(&self, r: &Ray, world: &Hittable_List, depth: u8) -> Color{
         let mut rec: HitRecord = HitRecord::new();
 
-        if depth <= 0 { return Color(0.0, 0.0, 0.0); }
+        if depth <= 0 { return Color(1.0, 1.0, 1.0); }
 
-        if(world.hit(r, &Interval::new(0.0, f64::INFINITY), &mut rec)) {
+        if world.hit(r, &Interval::new(0.0, f64::INFINITY), &mut rec) {
             // let v = rec.normal + Vector(1.0, 1.0, 1.0);
             let dir = Vector::rand_on_hemi(&rec.normal);
-            return self.ray_color(&Ray::new(dir, rec.p), world, self.max_depth - 1) * 0.5;
+            return self.ray_color(&Ray::new(dir, rec.p), world, self.max_depth - 1) * 0.6 * rec.col;
             // return Color(v.0, v.1, v.2) * 0.5;
         }
         
+        // if not hit object return sky color
         let unit_dir = unit_vector(r.dir());
         let a = (unit_dir.1 + 1.0) * 0.5;
         return Color(1.0, 1.0, 1.0) * (1.0 - a) + Color(0.5, 0.7, 1.0) * a;

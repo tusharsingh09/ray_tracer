@@ -1,14 +1,16 @@
 use crate::{hittable::{self, Hittable}, interval::Interval, vector::Vector};
 use crate::vector::*;
+use crate::ppm::*;
 
 pub struct Sphere {
     c: Vector,
-    r: f64
+    r: f64,
+    col: Color
 }
 
 impl Sphere {
     pub fn new(c: Vector, r: f64) -> Self {
-        Sphere {c, r}
+        Sphere {c: c, r: r, col: Color(1.0, 1.0, 1.0)}
     }
 
     pub fn center(&self) -> Vector {
@@ -17,6 +19,11 @@ impl Sphere {
 
     pub fn radius(&self) -> f64 {
         self.r
+    }
+
+    pub fn set_col(&mut self, c: Color) -> Self {
+        self.col = c;
+        Sphere {c: self.c, r: self.r, col: self.col}
     }
 
 }
@@ -44,6 +51,8 @@ impl Hittable for Sphere {
         // object.normal = (object.p - self.c) / self.r;
         let outward_normal: Vector = (object.p - self.c) / self.r;
         object.set_face_normal(&ray, &outward_normal);
+
+        object.col = self.col;
 
         return true;
 

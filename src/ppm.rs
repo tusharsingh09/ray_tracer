@@ -3,7 +3,7 @@ use std::io::{BufWriter, Write};
 
 use crate::interval::*;
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, Default)]
 pub struct Color(pub f64, pub f64, pub f64);
 
 impl Color {
@@ -14,8 +14,15 @@ impl Color {
 
 impl std::ops::Mul<f64> for Color {
     type Output = Color;
-    fn mul(self, rhs: f64) -> Self {
+    fn mul(self, rhs: f64) -> Color {
         Color((self.0 * rhs), (self.1 * rhs), (self.2 * rhs))
+    }
+}
+
+impl std::ops::Mul<Color> for Color {
+    type Output = Color;
+    fn mul(self, rhs: Color) -> Self::Output {
+        Color((self.0 * rhs.0), (self.1 * rhs.1), (self.2 * rhs.2))
     }
 }
 

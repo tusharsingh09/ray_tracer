@@ -7,6 +7,7 @@ mod hittable_list;
 mod util;
 mod interval;
 mod camera;
+mod material;
 
 use std::{fs::File, io::BufWriter};
 
@@ -17,6 +18,7 @@ use sphere::*;
 use util::*;
 use interval::*;
 use camera::*;
+use material::*;
 
 use crate::{hittable::{HitRecord, Hittable}, hittable_list::Hittable_List};
 
@@ -65,7 +67,7 @@ fn main() {
     // use p3, each line will have one pixel
     // going from top left to bottom right
     const ASPECT_RATIO: f64 = 16.0/9.0;
-    let height: u16 = 128;
+    let height: u16 = 1920;
     let width: u16 = (height as f64 * ASPECT_RATIO) as u16;
 
     // camera settings
@@ -90,9 +92,9 @@ fn main() {
     // world
     let mut world: Hittable_List = Hittable_List::new();
 
-    world.add(Box::new(Sphere::new(Vector(0.0, 0.0, -1.0), 0.5)));
-    world.add(Box::new(Sphere::new(Vector(0.0, -100.5, -1.0), 100.0)));
-    world.add(Box::new(Sphere::new(Vector(1.0, 0.0, -1.0), 0.5)));
+    world.add(Box::new(Sphere::new(Vector(0.0, 0.0, -1.0), 0.5).set_col(Color(1.0, 0.0, 0.0))));
+    world.add(Box::new(Sphere::new(Vector(0.0, -100.5, -1.0), 100.0).set_col(Color(0.0, 1.0, 0.0))));
+    world.add(Box::new(Sphere::new(Vector(1.0, 0.0, -1.0), 0.5).set_col(Color(0.0, 0.0, 1.0))));
     world.add(Box::new(Sphere::new(Vector(-1.0, 0.0, -1.0), 0.5)));
 
     /*
